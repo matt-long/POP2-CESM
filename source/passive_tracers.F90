@@ -11,7 +11,7 @@
 !     subroutines in individual passive tracer modules.
 
 ! !REVISION HISTORY:
-!  SVN:$Id$
+!  SVN:$Id: passive_tracers.F90 89825 2018-08-30 16:20:47Z mlevy@ucar.edu $
 
 ! !USES:
 
@@ -966,6 +966,7 @@
 ! !INTERFACE:
 
  subroutine set_sflux_passive_tracers(U10_SQR,ICE_FRAC,PRESS,ATM_FINE_DUST_FLUX,ATM_COARSE_DUST_FLUX,SEAICE_DUST_FLUX, &
+                                      ATM_XTFE_FLUX, SEAICE_XTFE_FLUX, &
                                       ATM_BLACK_CARBON_FLUX,SEAICE_BLACK_CARBON_FLUX, &
                                       lvsf_river,MASK_ESTUARY,vsf_river_correction,STF,STF_RIV)
 
@@ -984,6 +985,8 @@
       ATM_FINE_DUST_FLUX,       & ! fine dust flux from atm (g/cm^2/s)
       ATM_COARSE_DUST_FLUX,     & ! coarse dust flux from atm (g/cm^2/s)
       SEAICE_DUST_FLUX,         & ! coarse dust flux from seaice (g/cm^2/s)
+      ATM_XTFE_FLUX,            & ! Fe from space
+      SEAICE_XTFE_FLUX,         & ! Fe from space
       ATM_BLACK_CARBON_FLUX,    & ! black carbon flux from atm (g/cm^2/s)
       SEAICE_BLACK_CARBON_FLUX, & ! black carbon flux from seaice (g/cm^2/s)
       MASK_ESTUARY                ! mask for estuary model, 1 where it runs and 0 elsewhere
@@ -1039,6 +1042,7 @@
    if (ecosys_on) then
       call ecosys_driver_set_sflux_forcing( &
          U10_SQR, ICE_FRAC, PRESS, ATM_FINE_DUST_FLUX, ATM_COARSE_DUST_FLUX, SEAICE_DUST_FLUX, &
+         ATM_XTFE_FLUX, SEAICE_XTFE_FLUX, &
          ATM_BLACK_CARBON_FLUX, SEAICE_BLACK_CARBON_FLUX, &
          SST_FILT, SSS_FILT)
 

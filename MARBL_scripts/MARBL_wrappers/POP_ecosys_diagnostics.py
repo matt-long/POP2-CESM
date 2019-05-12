@@ -38,6 +38,8 @@ def write_ecosys_diagnostics_file(active_tracers, autotroph_list, zooplankton_li
     fout.write("ATM_FINE_DUST_FLUX_CPL : medium_average\n")
     fout.write("ATM_COARSE_DUST_FLUX_CPL : medium_average\n")
     fout.write("SEAICE_DUST_FLUX_CPL : medium_average\n")
+    fout.write("ATM_XTFE_FLUX_CPL : medium_average\n")
+    fout.write("SEAICE_XTFE_FLUX_CPL : medium_average\n")
     fout.write("ATM_BLACK_CARBON_FLUX_CPL : medium_average\n")
     fout.write("SEAICE_BLACK_CARBON_FLUX_CPL : medium_average\n")
 

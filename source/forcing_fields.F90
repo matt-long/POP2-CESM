@@ -18,7 +18,7 @@ module forcing_fields
    use blocks,      only: nx_block, ny_block
    use constants,   only: c0
    use domain_size, only: max_blocks_clinic,nt
-      
+
    implicit none
    save
 
@@ -86,6 +86,8 @@ module forcing_fields
       ATM_FINE_DUST_FLUX,       &! fine dust flux from atm from cpl (g/cm2/s)
       ATM_COARSE_DUST_FLUX,     &! coarse dust flux from atm from cpl (g/cm2/s)
       SEAICE_DUST_FLUX,         &! coarse dust flux from seaice from cpl (g/cm2/s)
+      ATM_XTFE_FLUX,            &!Fe flux from coupler
+      SEAICE_XTFE_FLUX,         &!Fe flux from coupler
       ATM_BLACK_CARBON_FLUX,    &! black carbon flux from atm from cpl (g/cm2/s)
       SEAICE_BLACK_CARBON_FLUX   ! black carbon flux from seaice from cpl (g/cm2/s)
 

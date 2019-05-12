@@ -12,7 +12,7 @@
 !  update routines for those fields.
 !
 ! !REVISION HISTORY:
-!  SVN:$Id$
+!  SVN:$Id: forcing.F90 89086 2018-04-27 17:31:33Z mlevy@ucar.edu $
 !
 ! !USES:
 
@@ -82,6 +82,8 @@
       tavg_ATM_FINE_DUST_FLUX_CPL,      &! tavg_id for ATM_FINE_DUST_FLUX from atm from cpl
       tavg_ATM_COARSE_DUST_FLUX_CPL,    &! tavg_id for ATM_COARSE_DUST_FLUX from atm from cpl
       tavg_SEAICE_DUST_FLUX_CPL,        &! tavg_id for SEAICE_DUST_FLUX from seaice from cpl
+      tavg_SEAICE_XTFE_FLUX_CPL,        &! tavg_id for SEAICE_XTFE_FLUX from seaice from cpl
+      tavg_ATM_XTFE_FLUX_CPL,           &! tavg_id for ATM_XTFE_FLUX from seaice from cpl
       tavg_ATM_BLACK_CARBON_FLUX_CPL,   &! tavg_id for ATM_BLACK_CARBON_FLUX from atm from cpl
       tavg_SEAICE_BLACK_CARBON_FLUX_CPL  ! tavg_id for SEAICE_BLACK_CARBON_FLUX from seaice from cpl
 
@@ -247,6 +249,16 @@
                           units='g/cm^2/s', grid_loc='2110',                  &
                           coordinates='TLONG TLAT time')
 
+   call define_tavg_field(tavg_SEAICE_XTFE_FLUX_CPL,'SEAICE_XTFE_FLUX_CPL',2, &
+                           long_name='Extraterrestrial dust released from sea ice passed from cpl',              &
+                           units='g/cm^2/s', grid_loc='2110',                  &
+                           coordinates='TLONG TLAT time')
+
+   call define_tavg_field(tavg_ATM_XTFE_FLUX_CPL,'ATM_XTFE_FLUX_CPL',2, &
+                           long_name='Extraterrestrial dust passed from cpl',              &
+                           units='g/cm^2/s', grid_loc='2110',                  &
+                           coordinates='TLONG TLAT time')
+
    call define_tavg_field(tavg_ATM_BLACK_CARBON_FLUX_CPL,'ATM_BLACK_CARBON_FLUX_CPL',2, &
                           long_name='ATM_BLACK_CARBON_FLUX from cpl',                   &
                           units='g/cm^2/s', grid_loc='2110',                            &
@@ -318,7 +330,7 @@
 !-----------------------------------------------------------------------
 
    real (r8), dimension(nx_block,ny_block,max_blocks_clinic) :: &
-      TFRZ               
+      TFRZ
    integer (int_kind) :: index_qsw, iblock, nbin
    real (r8) ::  &
       cosz_day,  &
@@ -352,7 +364,7 @@
       call set_ws(SMF)
    endif
 
-   !*** NOTE: with bulk NCEP and partially-coupled forcing 
+   !*** NOTE: with bulk NCEP and partially-coupled forcing
    !***       set_shf must be called before set_sfwf
 
    call set_shf(STF)
@@ -435,6 +447,7 @@
 
    if (nt > 2) then
       call set_sflux_passive_tracers(U10_SQR,IFRAC,ATM_PRESS,ATM_FINE_DUST_FLUX,ATM_COARSE_DUST_FLUX,SEAICE_DUST_FLUX, &
+                                     ATM_XTFE_FLUX, SEAICE_XTFE_FLUX, &
                                      ATM_BLACK_CARBON_FLUX,SEAICE_BLACK_CARBON_FLUX, &
                                      lvsf_river,MASK_ESTUARY,vsf_river_correction,STF,STF_RIV)
    endif
@@ -442,7 +455,7 @@
    ! running_mean_test_update_sflux_var is only necessary for test mode
    call running_mean_test_update_sflux_var
 
-   call set_chl   
+   call set_chl
 
 #ifdef CCSMCOUPLED
    if (ANY(SHF_QSW < qsw_eps)) then
@@ -538,7 +551,7 @@
                elsewhere
                   WORK = c0
                end where
-            else                     
+            else
                where (KMT(:,:,iblock) > 0) ! convert to kg(freshwater)/m^2/s
                   WORK = STF(:,:,2,iblock)/salinity_factor
                elsewhere
@@ -574,6 +587,8 @@
       call accumulate_tavg_field(ATM_FINE_DUST_FLUX(:,:,iblock), tavg_ATM_FINE_DUST_FLUX_CPL,iblock,1)
       call accumulate_tavg_field(ATM_COARSE_DUST_FLUX(:,:,iblock), tavg_ATM_COARSE_DUST_FLUX_CPL,iblock,1)
       call accumulate_tavg_field(SEAICE_DUST_FLUX(:,:,iblock), tavg_SEAICE_DUST_FLUX_CPL,iblock,1)
+      call accumulate_tavg_field(SEAICE_XTFE_FLUX(:,:,iblock), tavg_SEAICE_XTFE_FLUX_CPL,iblock,1)
+      call accumulate_tavg_field(ATM_XTFE_FLUX(:,:,iblock), tavg_ATM_XTFE_FLUX_CPL,iblock,1)
       call accumulate_tavg_field(ATM_BLACK_CARBON_FLUX(:,:,iblock), tavg_ATM_BLACK_CARBON_FLUX_CPL,iblock,1)
       call accumulate_tavg_field(SEAICE_BLACK_CARBON_FLUX(:,:,iblock), tavg_SEAICE_BLACK_CARBON_FLUX_CPL,iblock,1)
 

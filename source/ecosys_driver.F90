@@ -831,6 +831,8 @@ contains
        atm_fine_dust_flux,            &
        atm_coarse_dust_flux,          &
        seaice_dust_flux,              &
+       atm_xtfe_flux,                 &
+       seaice_xtfe_flux,              &
        atm_black_carbon_flux,         &
        seaice_black_carbon_flux,      &
        sst,                           &
@@ -847,6 +849,8 @@ contains
     real (r8), dimension(nx_block,ny_block,max_blocks_clinic) , intent(in)    :: atm_fine_dust_flux       ! fine dust flux from atm (g/cm**2/s)
     real (r8), dimension(nx_block,ny_block,max_blocks_clinic) , intent(in)    :: atm_coarse_dust_flux     ! coarse dust flux from atm (g/cm**2/s)
     real (r8), dimension(nx_block,ny_block,max_blocks_clinic) , intent(in)    :: seaice_dust_flux         ! dust flux from seaice (g/cm**2/s)
+    real (r8), dimension(nx_block,ny_block,max_blocks_clinic) , intent(in)    :: atm_xtfe_flux            ! dust flux from atm (g/cm**2/s)
+    real (r8), dimension(nx_block,ny_block,max_blocks_clinic) , intent(in)    :: seaice_xtfe_flux         ! dust flux from seaice (g/cm**2/s)
     real (r8), dimension(nx_block,ny_block,max_blocks_clinic) , intent(in)    :: atm_black_carbon_flux    ! black carbon flux from atm (g/cm**2/s)
     real (r8), dimension(nx_block,ny_block,max_blocks_clinic) , intent(in)    :: seaice_black_carbon_flux ! black carbon flux from seaice (g/cm**2/s)
     real (r8), dimension(nx_block,ny_block,max_blocks_clinic) , intent(in)    :: sst                      ! sea surface temperature (c)
@@ -865,6 +869,8 @@ contains
          atm_fine_dust_flux,              &
          atm_coarse_dust_flux,            &
          seaice_dust_flux,                &
+         atm_xtfe_flux,                   &
+         seaice_xtfe_flux,                &         
          atm_black_carbon_flux,           &
          seaice_black_carbon_flux,        &
          sst,                             &

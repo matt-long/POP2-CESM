@@ -1671,6 +1671,8 @@ contains
        atm_fine_dust_flux,                    &
        atm_coarse_dust_flux,                  &
        seaice_dust_flux,                      &
+       atm_xtfe_flux,                         &
+       seaice_xtfe_flux,                      &
        atm_black_carbon_flux,                 &
        seaice_black_carbon_flux,              &
        sst,                                   &
@@ -1710,6 +1712,8 @@ contains
     real (r8), intent(in)  :: atm_fine_dust_flux       (nx_block,ny_block,max_blocks_clinic) ! fine dust flux from atm (g/cm**2/s)
     real (r8), intent(in)  :: atm_coarse_dust_flux     (nx_block,ny_block,max_blocks_clinic) ! coarse dust flux from atm (g/cm**2/s)
     real (r8), intent(in)  :: seaice_dust_flux         (nx_block,ny_block,max_blocks_clinic) ! dust flux from seaice (g/cm**2/s)
+    real (r8), intent(in)  :: atm_xtfe_flux            (nx_block,ny_block,max_blocks_clinic) ! Fe flux from atm (g/cm**2/s)
+    real (r8), intent(in)  :: seaice_xtfe_flux         (nx_block,ny_block,max_blocks_clinic) ! Fe flux from seaice (g/cm**2/s)
     real (r8), intent(in)  :: atm_black_carbon_flux    (nx_block,ny_block,max_blocks_clinic) ! black carbon flux from atm (g/cm**2/s)
     real (r8), intent(in)  :: seaice_black_carbon_flux (nx_block,ny_block,max_blocks_clinic) ! black carbon flux from seaice (g/cm**2/s)
     real (r8), intent(in)  :: sst                      (nx_block,ny_block,max_blocks_clinic) ! sea surface temperature (c)
@@ -1985,6 +1989,9 @@ contains
                    forcing_field%field_0d(:,:,iblock) = forcing_field%field_0d(:,:,iblock) + seaice_fe_bioavail_frac(:,:) * &
                         (iron_frac_in_seaice_dust * seaice_dust_flux(:,:,iblock) + &
                          iron_frac_in_seaice_bc * seaice_black_carbon_flux(:,:,iblock))
+
+                   forcing_field%field_0d(:,:,iblock) = forcing_field%field_0d(:,:,iblock) + &
+                       atm_xtfe_flux(:,:,iblock) + seaice_xtfe_flux(:,:,iblock)
 
                    ! convert to nmol/cm^2/s
                    forcing_field%field_0d(:,:,iblock) = (1.0e9_r8 / molw_Fe) * forcing_field%field_0d(:,:,iblock)

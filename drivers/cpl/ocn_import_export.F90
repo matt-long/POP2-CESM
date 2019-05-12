@@ -12,7 +12,7 @@ module ocn_import_export
 
    use seq_flds_mod
    use seq_timemgr_mod
-   use shr_file_mod 
+   use shr_file_mod
    use shr_cal_mod,       only : shr_cal_date2ymd
    use shr_sys_mod
 
@@ -33,6 +33,7 @@ module ocn_import_export
    use forcing_fields,    only: IFRAC, U10_SQR, ATM_PRESS
    use forcing_fields,    only: LAMULT, USTOKES, VSTOKES
    use forcing_fields,    only: ATM_FINE_DUST_FLUX, ATM_COARSE_DUST_FLUX, SEAICE_DUST_FLUX
+   use forcing_fields,    only: ATM_XTFE_FLUX, SEAICE_XTFE_FLUX
    use forcing_fields,    only: ATM_BLACK_CARBON_FLUX, SEAICE_BLACK_CARBON_FLUX
    use mcog,              only: lmcog, mcog_ncols, import_mcog
    use forcing_coupled,   only: ncouple_per_day,  &
@@ -57,9 +58,9 @@ module ocn_import_export
    save
 
    ! accumulated sum of send buffer quantities for averaging before being sent
-   real (r8), dimension(:,:,:,:), allocatable ::  SBUFF_SUM 
+   real (r8), dimension(:,:,:,:), allocatable ::  SBUFF_SUM
 
-   real (r8) :: tlast_coupled 
+   real (r8) :: tlast_coupled
 
 contains
 
@@ -75,7 +76,7 @@ contains
 !  This routine receives message from cpl7 driver
 !
 !    The following fields are always received from the coupler:
-! 
+!
 !    o  taux   -- zonal wind stress (taux)                 (W/m2   )
 !    o  tauy   -- meridonal wind stress (tauy)             (W/m2   )
 !    o  snow   -- water flux due to snow                   (kg/m2/s)
@@ -91,15 +92,15 @@ contains
 !    o  ifrac  -- ice fraction
 !    o  rofl   -- river runoff flux                        (kg/m2/s)
 !    o  rofi   -- ice runoff flux                          (kg/m2/s)
-! 
+!
 !    The following fields are sometimes received from the coupler,
 !      depending on model options:
-! 
+!
 !    o  pslv   -- sea-level pressure                       (Pa)
 !    o  duu10n -- 10m wind speed squared                   (m^2/s^2)
 !    o  co2prog-- bottom atm level prognostic co2
 !    o  co2diag-- bottom atm level diagnostic co2
-! 
+!
 !-----------------------------------------------------------------------
 !
 ! !REVISION HISTORY:
@@ -122,7 +123,7 @@ contains
    character (char_len) ::   &
       label,                 &
       message
- 
+
    integer (int_kind) ::  &
       i,j,k,n,ncol,iblock
 
@@ -145,7 +146,7 @@ contains
 
 !-----------------------------------------------------------------------
 !
-!  zero out padded cells 
+!  zero out padded cells
 !
 !-----------------------------------------------------------------------
 
@@ -184,7 +185,7 @@ contains
 !  rotate true zonal/meridional wind stress into local coordinates,
 !  convert to dyne/cm**2, and shift SMFT to U grid
 !
-!  halo updates are performed in subroutine rotate_wind_stress, 
+!  halo updates are performed in subroutine rotate_wind_stress,
 !  following the rotation
 !
 !-----------------------------------------------------------------------
@@ -237,7 +238,7 @@ contains
          !***  converting from m**2/s**2 to cm**2/s**2
          WORKB(i,j       ) = x2o(index_x2o_So_duu10n,n)
          U10_SQR(i,j,iblock) = cmperm * cmperm * WORKB(i,j) * RCALCT(i,j,iblock)
-         
+
          ! QL, 150526, langmuir mixing variables
          ! QL, 150908, only apply enhancement factor to ice-free region
          if (IFRAC(i,j,iblock) <= 0.05_r8) then
@@ -248,9 +249,9 @@ contains
             LAMULT(i,j,iblock) = c1
          endif
          ! QL, 150706, DEBUG
-         !print*, "LAMULT = ", LAMULT(i,j,iblock)  
-         !print*, "RCALCT = ", RCALCT(i,j,iblock)  
-         !print*, "WORKB = ", WORKB(i,j)  
+         !print*, "LAMULT = ", LAMULT(i,j,iblock)
+         !print*, "RCALCT = ", RCALCT(i,j,iblock)
+         !print*, "WORKB = ", WORKB(i,j)
          !! DEBUG
          ! import surface Stokes drift (m/s)
          WORKB(i,j       ) = x2o(index_x2o_Sw_ustokes,n)
@@ -270,6 +271,14 @@ contains
          ! convert dust flux from MKS (kg/m^2/s) to CGS (g/cm^2/s)
          SEAICE_DUST_FLUX(i,j,iblock) = 0.1_r8 * RCALCT(i,j,iblock) * ( &
             x2o(index_x2o_Fioi_flxdst,n))
+
+        ! convert Fe flux from MKS (kg/m^2/s) to CGS (g/cm^2/s)
+        SEAICE_XTFE_FLUX(i,j,iblock) = 0.1_r8 * RCALCT(i,j,iblock) * ( &
+           x2o(index_x2o_Fioi_xtFe_ice_rxn,n))
+
+         ! convert Fe flux from MKS (kg/m^2/s) to CGS (g/cm^2/s)
+         ATM_XTFE_FLUX(i,j,iblock) = 0.1_r8 * RCALCT(i,j,iblock) * ( &
+           x2o(index_x2o_Faxa_xtFe,n))
 
          ! convert black carbon flux from MKS (kg/m^2/s) to CGS (g/cm^2/s)
          ATM_BLACK_CARBON_FLUX(i,j,iblock) = 0.1_r8 * RCALCT(i,j,iblock) * ( &
@@ -415,7 +424,7 @@ contains
 
       call named_field_set(ATM_CO2_DIAG_nf_ind, WORK1)
    endif
- 
+
    if (index_x2o_Faxa_nhx > 0) then
       n = 0
       do iblock = 1, nblocks_clinic
@@ -427,7 +436,7 @@ contains
          do j=this_block%jb,this_block%je
          do i=this_block%ib,this_block%ie
             n = n + 1
-            WORK1(i,j,iblock) = x2o(index_x2o_Faxa_nhx,n) * (1.0e-1_r8 * (c1/14.0_r8) * 1.0e9_r8) 
+            WORK1(i,j,iblock) = x2o(index_x2o_Faxa_nhx,n) * (1.0e-1_r8 * (c1/14.0_r8) * 1.0e9_r8)
          enddo
          enddo
       enddo
@@ -489,7 +498,7 @@ contains
          ' Global averages of fluxes received from cpl at ',  &
            cyear,'/',cmonth ,'/',cday,  chour,':',cminute,':',csecond
      call document ('pop_recv_from_coupler', trim(message))
- 
+
      m2percm2  = mpercm*mpercm
      nrecv = size(x2o, dim=1)
      do k = 1,nrecv
@@ -529,7 +538,7 @@ contains
 ! !IROUTINE: ocn_export_mct
 ! !INTERFACE:
 
- subroutine ocn_export(o2x, ldiag_cpl, errorCode)   
+ subroutine ocn_export(o2x, ldiag_cpl, errorCode)
 
 ! !DESCRIPTION:
 !  This routine calls the routines necessary to send pop fields to
@@ -553,9 +562,9 @@ contains
 !-----------------------------------------------------------------------
 
    integer (int_kind) :: n, iblock
-           
+
    character (char_len)    :: label
- 
+
    integer (int_kind) ::  &
         i,j,k
 
@@ -676,7 +685,7 @@ contains
       this_block = get_block(blocks_clinic(iblock),iblock)
       call ugrid_to_tgrid(WORK3,SBUFF_SUM(:,:,iblock,index_o2x_So_dhdx),iblock)
       call ugrid_to_tgrid(WORK4,SBUFF_SUM(:,:,iblock,index_o2x_So_dhdy),iblock)
- 
+
       WORK1 = (WORK3*cos(ANGLET(:,:,iblock)) + WORK4*sin(-ANGLET(:,:,iblock)))  &
               /grav/tlast_coupled
       WORK2 = (WORK4*cos(ANGLET(:,:,iblock)) - WORK3*sin(-ANGLET(:,:,iblock)))  &
@@ -765,7 +774,7 @@ contains
                        POP_gridHorzLocCenter,          &
                        POP_fieldKindScalar, errorCode, &
                        fillValue = 0.0_POP_r8)
-       
+
          if (errorCode /= POP_Success) then
             call POP_ErrorSet(errorCode, &
                'ocn_export_mct: error updating halo for state')
@@ -783,7 +792,7 @@ contains
    endif
 
 1100 format ('comm_diag ', a3, 1x, a4, 1x, a8, 1x, es26.19:, 1x, a6)
-    
+
     tlast_coupled = c0
 
 !-----------------------------------------------------------------------
@@ -805,7 +814,7 @@ contains
 !
 ! !REVISION HISTORY:
 !  same as module
-! 
+!
 !EOP
 !BOC
 
@@ -933,7 +942,7 @@ contains
 !EOC
 
  end subroutine POP_sum_buffer
- 
+
 !***********************************************************************
 
 end module ocn_import_export

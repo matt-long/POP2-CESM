@@ -1,7 +1,7 @@
 module POP_CplIndices
- 
-  use seq_flds_mod, only : seq_flds_x2o_fields, seq_flds_o2x_fields 
-  use seq_flds_mod, only : seq_flds_i2o_per_cat, ice_ncat 
+
+  use seq_flds_mod, only : seq_flds_x2o_fields, seq_flds_o2x_fields
+  use seq_flds_mod, only : seq_flds_i2o_per_cat, ice_ncat
   use mcog, only : mcog_ncols, lmcog_flds_sent
   use mct_mod
 
@@ -12,7 +12,7 @@ module POP_CplIndices
 
   ! ocn -> drv
 
-  integer :: index_o2x_So_t      
+  integer :: index_o2x_So_t
   integer :: index_o2x_So_u
   integer :: index_o2x_So_v
   integer :: index_o2x_So_s
@@ -42,7 +42,7 @@ module POP_CplIndices
   integer :: index_x2o_Foxx_tauy       ! meridonal wind stress (tauy)     (W/m2   )
   integer :: index_x2o_Foxx_swnet      ! net short-wave heat flux         (W/m2   )
   integer :: index_x2o_Foxx_sen        ! sensible heat flux               (W/m2   )
-  integer :: index_x2o_Foxx_lat        
+  integer :: index_x2o_Foxx_lat
   integer :: index_x2o_Foxx_lwup       ! longwave radiation (up)          (W/m2   )
   integer :: index_x2o_Faxa_lwdn       ! longwave radiation (down)        (W/m2   )
   integer :: index_x2o_Fioi_melth      ! heat flux from snow & ice melt   (W/m2   )
@@ -50,9 +50,11 @@ module POP_CplIndices
   integer :: index_x2o_Fioi_bcpho      ! flux: Black Carbon hydrophobic release from sea ice component
   integer :: index_x2o_Fioi_bcphi      ! flux: Black Carbon hydrophilic release from sea ice component
   integer :: index_x2o_Fioi_flxdst     ! flux: dust release from sea ice component
+  integer :: index_x2o_Fioi_xtFe_ice_rxn ! Fe from space from sea ice
+  integer :: index_x2o_Faxa_xtFe         ! Fe from space from atmosphere
   integer :: index_x2o_Fioi_salt       ! salt                             (kg(salt)/m2/s)
   integer :: index_x2o_Foxx_evap       ! evaporation flux                 (kg/m2/s)
-  integer :: index_x2o_Faxa_prec         
+  integer :: index_x2o_Faxa_prec
   integer :: index_x2o_Faxa_snow       ! water flux due to snow           (kg/m2/s)
   integer :: index_x2o_Faxa_rain       ! water flux due to rain           (kg/m2/s)
   integer :: index_x2o_Faxa_bcphidry   ! flux: Black   Carbon hydrophilic dry deposition
@@ -121,15 +123,17 @@ contains
     index_x2o_Foxx_sen      = mct_avect_indexra(x2o,'Foxx_sen')
     index_x2o_Foxx_lwup     = mct_avect_indexra(x2o,'Foxx_lwup')
     index_x2o_Faxa_lwdn     = mct_avect_indexra(x2o,'Faxa_lwdn')
-    index_x2o_Fioi_melth    = mct_avect_indexra(x2o,'Fioi_melth')   
+    index_x2o_Fioi_melth    = mct_avect_indexra(x2o,'Fioi_melth')
     index_x2o_Fioi_meltw    = mct_avect_indexra(x2o,'Fioi_meltw')
-    index_x2o_Fioi_salt     = mct_avect_indexra(x2o,'Fioi_salt')   
+    index_x2o_Fioi_salt     = mct_avect_indexra(x2o,'Fioi_salt')
     index_x2o_Fioi_bcpho    = mct_avect_indexra(x2o,'Fioi_bcpho')
     index_x2o_Fioi_bcphi    = mct_avect_indexra(x2o,'Fioi_bcphi')
     index_x2o_Fioi_flxdst   = mct_avect_indexra(x2o,'Fioi_flxdst')
-    index_x2o_Faxa_prec     = mct_avect_indexra(x2o,'Faxa_prec')   
-    index_x2o_Faxa_snow     = mct_avect_indexra(x2o,'Faxa_snow')   
-    index_x2o_Faxa_rain     = mct_avect_indexra(x2o,'Faxa_rain')   
+    index_x2o_Fioi_xtFe_ice_rxn = mct_avect_indexra(x2o,'Fioi_xtFe_ice_rxn')
+    index_x2o_Faxa_xtFe     = mct_avect_indexra(x2o,'Faxa_xtFe')
+    index_x2o_Faxa_prec     = mct_avect_indexra(x2o,'Faxa_prec')
+    index_x2o_Faxa_snow     = mct_avect_indexra(x2o,'Faxa_snow')
+    index_x2o_Faxa_rain     = mct_avect_indexra(x2o,'Faxa_rain')
     index_x2o_Foxx_evap     = mct_avect_indexra(x2o,'Foxx_evap')
     index_x2o_Foxx_rofl     = mct_avect_indexra(x2o,'Foxx_rofl')
     index_x2o_Foxx_rofi     = mct_avect_indexra(x2o,'Foxx_rofi')
